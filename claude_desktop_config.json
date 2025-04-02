@@ -1,14 +1,28 @@
 {
     "mcpServers": {
+        "debug_script": {
+            "command": "python",
+            "args": [
+                "C:\\Users\\maxse\\OneDrive\\Desktop\\LlamaCloud-MCP\\fork-llamacloud-mcp\\debug_script.py"
+            ]
+        },
+        "simple_mcp_server": {
+            "command": "poetry",
+            "args": [
+                "run",
+                "python",
+                "C:\\Users\\maxse\\OneDrive\\Desktop\\LlamaCloud-MCP\\fork-llamacloud-mcp\\simple_mcp_server.py"
+            ],
+            "cwd": "C:\\Users\\maxse\\OneDrive\\Desktop\\LlamaCloud-MCP\\fork-llamacloud-mcp"
+        },
         "llama_index_docs_server": {
             "command": "poetry",
             "args": [
-                "--directory",
-                "$YOURPATH/llamacloud-mcp",
                 "run",
-                "python",
-                "$YOURPATH/llamacloud-mcp/mcp-server.py"
-            ]
+                "python", 
+                "C:\\Users\\maxse\\OneDrive\\Desktop\\LlamaCloud-MCP\\fork-llamacloud-mcp\\llamacloud_mcp\\mcp_server.py"
+            ],
+            "cwd": "C:\\Users\\maxse\\OneDrive\\Desktop\\LlamaCloud-MCP\\fork-llamacloud-mcp"
         }
     }
 }

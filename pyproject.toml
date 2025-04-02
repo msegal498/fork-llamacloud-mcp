@@ -2,8 +2,11 @@
 name = "llamacloud-mcp"
 version = "0.1.0"
 description = ""
-authors = ["Laurie Voss <github@seldo.com>"]
+authors = ["max segal <mscp498@gmail.com>"]
 readme = "README.md"
+packages = [
+    { include = "llamacloud_mcp" }
+]
 
 [tool.poetry.dependencies]
 python = "^3.11"
