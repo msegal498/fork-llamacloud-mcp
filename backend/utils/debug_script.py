@@ -3,6 +3,7 @@ import sys
 import json
 import subprocess
 import traceback
+sys.path.append("../../")  # Add the project root to path
 
 def print_error(msg):
     print(f"ERROR: {msg}", file=sys.stderr)
@@ -25,13 +26,13 @@ except Exception as e:
 
 # Check for pyproject.toml
 try:
-    if os.path.exists("pyproject.toml"):
-        print("\npyproject.toml exists in current directory", file=sys.stderr)
-        with open("pyproject.toml", "r") as f:
+    if os.path.exists("../../pyproject.toml"):
+        print("\npyproject.toml exists in project root", file=sys.stderr)
+        with open("../../pyproject.toml", "r") as f:
             print("\nContents of pyproject.toml:", file=sys.stderr)
             print(f.read(), file=sys.stderr)
     else:
-        print("\npyproject.toml does NOT exist in current directory", file=sys.stderr)
+        print("\npyproject.toml does NOT exist in project root", file=sys.stderr)
         
         # Try parent directory
         parent_dir = os.path.dirname(current_dir)

@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PDF Chunking System</title>
+    <link rel="stylesheet" href="/static/css/styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>PDF Chunking System</h1>
+            <p>Upload a PDF file to extract, chunk, summarize, and download the processed result.</p>
+        </header>
+
+        <main>
+            <section id="upload-section" class="card">
+                <h2>Upload PDF</h2>
+                <form id="pdf-upload-form">
+                    <div class="form-group">
+                        <label for="pdf-file">Select a PDF file:</label>
+                        <input type="file" id="pdf-file" name="file" accept=".pdf" required>
+                    </div>
+                    <div class="form-group">
+                        <button type="submit" id="upload-btn" class="btn primary">Upload & Process</button>
+                    </div>
+                </form>
+            </section>
+
+            <section id="status-section" class="card hidden">
+                <h2>Processing Status</h2>
+                <div class="status-container">
+                    <div id="status-indicator" class="status pending">Pending</div>
+                    <div id="status-message">Your PDF is being uploaded...</div>
+                    <div class="progress-container">
+                        <div id="progress-bar" class="progress-bar"></div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="result-section" class="card hidden">
+                <h2>Processing Complete</h2>
+                <div id="result-details"></div>
+                <div class="actions">
+                    <a id="download-link" href="#" class="btn primary">Download Processed PDF</a>
+                    <button id="new-upload-btn" class="btn secondary">Process Another PDF</button>
+                </div>
+            </section>
+
+            <section id="error-section" class="card hidden">
+                <h2>Error</h2>
+                <div id="error-message" class="error"></div>
+                <div class="actions">
+                    <button id="retry-btn" class="btn primary">Try Again</button>
+                </div>
+            </section>
+        </main>
+
+        <footer>
+            <p>PDF Chunking System &copy; 2025</p>
+        </footer>
+    </div>
+
+    <script src="/static/js/main.js"></script>
+</body>
+</html>

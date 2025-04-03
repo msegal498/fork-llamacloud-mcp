@@ -1,149 +1,194 @@
-# LlamaCloud MCP Integration
+# PDF Chunking System
 
-This repository provides tools to integrate LlamaCloud with Claude Desktop via the Machine Chat Protocol (MCP). It allows Claude to search and retrieve information from LlamaIndex documentation stored in a LlamaCloud index.
+This project provides a PDF chunking system built on top of the LlamaCloud-MCP integration. It allows users to upload PDF files, process them (extract text, chunk it, and summarize content), and download the processed results.
 
-![Claude Logo](claude.png)
+## Architecture
 
-## Features
+The system consists of the following components:
 
-- **Claude Desktop Integration**: Connect Claude Desktop to your LlamaCloud indexes
-- **LlamaIndex Documentation Search**: Query LlamaIndex documentation using natural language
-- **Multiple Server Options**: Choose between simple stdio-based servers or HTTP servers
-- **Debugging Tools**: Helper scripts to troubleshoot your setup
+### Backend
+- **MCP Server**: Core server with stdio transport for local CLI usage
+- **MCP HTTP Server**: REST API for PDF processing operations
+- **Shared Client**: Common functionality for LlamaCloud/OpenAI interaction and PDF processing
+- **PDF Processor**: Utilities for text extraction, chunking, and PDF generation
 
-## Prerequisites
+### Frontend
+- **Web Interface**: User-friendly interface for uploading and processing PDFs
+- **Frontend Server**: Proxies requests to the MCP HTTP Server and handles file uploads/downloads
 
-- Python 3.11+
-- Poetry (for dependency management)
-- Claude Desktop
-- LlamaCloud account with an existing index
-- OpenAI API key (for the client demo)
+## Installation
 
-## Setup Instructions
-
-### 1. Clone the Repository
+1. Clone this repository
+2. Set up your Python environment with Poetry (Python 3.11+ recommended):
 
 ```bash
-git clone https://github.com/yourusername/llamacloud-mcp.git
-cd llamacloud-mcp
-```
-
-### 2. Install Dependencies
-
-```bash
+# Install dependencies using Poetry
 poetry install
 ```
 
-### 3. Configure Environment Variables
-
-1. Copy the sample `.env` file and fill in your credentials:
+3. Set up your environment variables in `config/.env`:
 
 ```
+# Server Configuration
+FRONTEND_PORT=8080
+MCP_SERVER_PORT=8000
+MCP_SERVER_NAME=pdf-chunking-server
+MCP_SERVER_URL=http://localhost:8000
+
 # LlamaCloud Configuration
-LLAMA_CLOUD_INDEX_NAME="your-index-name"
-LLAMA_CLOUD_PROJECT_NAME="Your Project"
-LLAMA_CLOUD_ORG_ID="your-organization-id"
-LLAMA_CLOUD_API_KEY="your-llamacloud-api-key"
+LLAMA_CLOUD_API_KEY=your_api_key_here
+LLAMA_CLOUD_ORG_ID=your_org_id_here
+LLAMA_CLOUD_PROJECT_NAME=your_project_name_here
+LLAMA_CLOUD_INDEX_NAME=your_index_name_here
 
-# MCP Server Configuration
-MCP_SERVER_URL="http://localhost:8000/sse"
-MCP_SERVER_PORT="8000"
-MCP_SERVER_NAME="llama-index-server"
+# OpenAI Configuration (for summarization)
+OPENAI_API_KEY=your_openai_api_key_here
 
-# OpenAI API Key (for client demo)
-OPENAI_API_KEY="your-openai-api-key"
-```
-
-### 4. Configure Claude Desktop
-
-Follow the instructions in [CLAUDE_SETUP.md](CLAUDE_SETUP.md) to properly configure Claude Desktop to work with this MCP server.
-
-You can use the provided script to automatically update your Claude Desktop configuration:
-
-```bash
-python update_claude_config.py
+# PDF Processing Configuration
+PDF_UPLOAD_DIR=./data/uploads
+PDF_OUTPUT_DIR=./data/outputs
+DEFAULT_CHUNK_SIZE=1000
+DEFAULT_CHUNK_OVERLAP=200
 ```
 
 ## Usage
 
-### Running the MCP Server (stdio for Claude Desktop)
+### Starting the System
+
+The easiest way to start the system is to use the provided start script:
 
 ```bash
-poetry run python llamacloud_mcp/mcp_server.py
+# Start all components
+poetry run python -m scripts.start_system all
+
+# Or simply
+poetry run python -m scripts.start_system
 ```
 
-### Running the HTTP Server (for API clients)
+You can then access the web interface at:
+
+```
+http://localhost:8080
+```
+
+### Running Components Separately
+
+If you prefer to run the components separately:
+
+**Using Poetry Run Scripts:**
+```bash
+# Start MCP HTTP Server
+poetry run start-mcp-http
+
+# Start Frontend Server
+poetry run start-frontend
+```
+
+**Or using Python modules:**
+```bash
+# Start MCP HTTP Server only
+poetry run python -m scripts.start_system mcp-http
+
+# Start Frontend Server only
+poetry run python -m scripts.start_system frontend
+```
+
+### Processing PDFs
+
+1. Open your browser and navigate to `http://localhost:8080`
+2. Upload a PDF file using the web interface
+3. The system will process the PDF and display status updates
+4. Once processing is complete, download the summarized PDF
+
+### CLI Usage
+
+For development and testing, you can use the local client directly:
 
 ```bash
-poetry run python mcp_http_server.py
+# Start the MCP Server with stdio transport
+poetry run start-mcp-server
 ```
 
-### Testing with Debug Script
+## Project Structure
 
-```bash
-python debug_script.py
 ```
-
-### Testing with MCP Client
-
-```bash
-poetry run python mcp-client.py "What is LlamaIndex?"
+fork-llamacloud-mcp/
+│
+├── backend/                          # Backend components
+│   ├── api/                          # API endpoints
+│   │   └── mcp_http_server.py        # MCP HTTP server
+│   │
+│   ├── clients/                      # Client implementations
+│   │   ├── shared_llama_client.py    # Shared functionality
+│   │   ├── mcp_client_local.py       # Local client for CLI
+│   │   └── mcp_client_remote.py      # Remote client for web
+│   │
+│   ├── llamacloud_mcp/               # Core package
+│   │   └── mcp_server.py             # Core MCP implementation
+│   │
+│   └── utils/                        # Utility functions
+│       └── pdf_processor.py          # PDF processing utilities
+│
+├── frontend/                         # Frontend components
+│   ├── server/                       # Frontend server
+│   │   └── frontend_server.py        # FastAPI server
+│   │
+│   └── static/                       # Static assets
+│       ├── css/                      # CSS stylesheets
+│       │   └── styles.css            # Main stylesheet
+│       ├── js/                       # JavaScript files
+│       │   └── main.js               # Frontend logic
+│       └── index.html                # Main HTML template
+│
+├── data/                             # Data directories
+│   ├── uploads/                      # Uploaded PDF files
+│   └── outputs/                      # Processed PDF files
+│
+├── config/                           # Configuration files
+│   └── .env                          # Environment variables
+│
+├── scripts/                          # Utility scripts
+│   └── start_system.py               # System startup script
+│
+├── poetry.lock                       # Poetry lock file
+├── pyproject.toml                    # Project configuration
+└── README.md                         # This file
 ```
-
-## Server Types
-
-This repository includes multiple server implementations:
-
-1. **`simple_mcp_server.py`**: A minimal MCP server for testing Claude Desktop connectivity
-2. **`llamacloud_mcp/mcp_server.py`**: The main stdio-based MCP server for Claude Desktop
-3. **`mcp_http_server.py`**: HTTP server for programmatic clients
 
 ## Troubleshooting
 
-If you're experiencing issues:
+If you encounter issues:
 
-1. Run the **debug_script.py** to check your environment setup
-2. Ensure Poetry is correctly installed and in your PATH
-3. Verify that all required environment variables are set
-4. Check Claude Desktop logs for detailed error messages
-5. See [CLAUDE_SETUP.md](CLAUDE_SETUP.md) for detailed troubleshooting steps
+1. Make sure all required environment variables are set in the `config/.env` file
+2. Check that the MCP HTTP server is running on port 8000
+3. Check that the frontend server is running on port 8080
+4. Confirm that your LlamaCloud/OpenAI API keys are valid
+5. Ensure that the required Python packages are installed via Poetry
+6. Check the system status at http://localhost:8080/status
 
-## How It Works
+### Running without API Keys
 
-1. The MCP server exposes a `llama_index_documentation` tool that accepts natural language queries
-2. When invoked, the tool connects to your LlamaCloud index using the provided credentials
-3. The query is processed by the LlamaCloud index, retrieving relevant documentation
-4. The response is returned to Claude, which can then provide you with the information
+If you want to test the system without setting up API keys, you can use the fallback configuration:
 
-## Components
+```bash
+# Copy the fallback configuration (no API keys required)
+copy config\.env.fallback config\.env
 
-- **`llamacloud_mcp/mcp_server.py`**: Main MCP server implementation
-- **`mcp_http_server.py`**: HTTP server implementation
-- **`simple_mcp_server.py`**: Diagnostic MCP server
-- **`debug_script.py`**: Environment verification tool
-- **`update_claude_config.py`**: Claude Desktop configuration utility
-- **`mcp-client.py`**: Example client using OpenAI to interact with the MCP server
-
-## License
-
-This project is licensed under the terms specified in the [LICENSE](LICENSE) file.
-
-## PDF Chunking & Summarization Tool
-
-Based on the included implementation plan, there are plans to develop a PDF chunking and summarization tool with the following architecture:
-
-```
-[ Frontend Website (HTML/JS) ]
-          │
-          ▼
-[ Backend API (Python: FastAPI) ]
-          │
-          ▼
-[ LlamaIndex + OpenAI API ]
-    ├── PDF Parsing (pdfplumber)
-    ├── Chunking (LlamaIndex)
-    ├── Recursive Summarization (LlamaIndex)
-    └── PDF Export (pdfkit)
+# Run the system
+poetry run start
 ```
 
-See the implementation plan document for detailed information on this upcoming feature.
+In fallback mode, the following limitations apply:
+- Documentation search will not work (returns error messages)
+- Summarization will use a basic text extraction algorithm instead of AI
+- The system will still extract text, chunk it, and generate PDFs
+
+## Dependencies
+
+The system relies on the following key dependencies:
+- FastAPI and Uvicorn for web servers
+- PyPDF2 for PDF text extraction
+- ReportLab for PDF generation
+- LlamaIndex for LlamaCloud integration
+- OpenAI for text summarization
+- MCP for server/client communication
